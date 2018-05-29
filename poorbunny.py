@@ -25,18 +25,17 @@ class PoorBunny(object):
         return self.do_command(*args, **kwargs)
 
     def do_command(self, *args, **kwargs):
-        if kwargs:
-            try:
-                method, margs = kwargs['query'].split(' ', 1)
-                print(method)
-                print(margs)
-            except ValueError:
-                method = None
+        if kwargs and 'query' in kwargs:
+            split = kwargs['query'].split(' ', 1)
+            if len(split) == 1:
+                method = split[0]
+                margs = ''
+            else:
+                method, margs = split
             if not method or method not in self.commands.cmd_list:
                 method = DETAULT_CMD
-                margs = args[0]
+                margs = kwargs['query']
             cmd = self.commands.cmd_list.get(method, None)
-            print(cmd)
             result, rtype = cmd(margs)
             if rtype == ResultType.REDIRECTION:
                 print("redirecting")
