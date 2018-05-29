@@ -1,4 +1,3 @@
-from __future__ import re
 from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
@@ -6,6 +5,8 @@ from __future__ import division
 
 from functools import wraps
 from requests.models import Request
+
+import re
 
 PYTHON2_REF = 'https://docs.python.org/2/search.html'
 PYTHON3_REF = 'https://docs.python.org/3/search.html'
@@ -50,34 +51,29 @@ class CommandFactory(object):
         commands = cls.REGISTERED_COMMANDS
         return BunnyCommands(cls.REGISTERED_COMMANDS, cls.REGISTERED_DYNAMIC_COMMANDS)
 
-
-def register_command(cmd):
-    CommandFactory.REGISTERED_COMMANDS[cmd.__name__] = cmd
-    return cmd
-
-def register_dynamic(cmd):
-    # These will be called in the order they are defined
-    CommandFactory.REGISTERED_DYNAMIC_COMMANDS.add(cmd)
-    return cmd
-
-
 def register_redirection_command(cmd):
+    wrapped = register_redirection(cmd)
+    CommandFactory.REGISTERED_COMMANDS[cmd.__name__] = wrapped
+    return wrapped
+
+def register_dynamic_redirection(cmd):
+    wrapped = register_redirection(cmd)
+    CommandFactory.REGISTERED_DYNAMIC_COMMANDS.append(wrapped)
+    return wrapped
+
+def register_redirection(cmd):
     @wraps(cmd)
     def wrapped(*args, **kwargs):
         ret = cmd(*args, **kwargs)
         return ret, ResultType.REDIRECTION
-    register_command(wrapped)
     return wrapped
-
 
 def register_content_command(cmd):
     @wraps(cmd)
     def wrapped(*args, **kwargs):
         ret = cmd(*args, **kwargs)
         return ret, ResultType.CONTENT
-    register_command(wrapped)
     return wrapped
-
 
 # TODO: separate core functions apart from additional functions
 
@@ -179,19 +175,19 @@ def cpp(arg):
     payload = {'q': arg}
     return Request(url=CPLUSPLUS, params=payload).prepare().url
 
-@register_dynamic
+@register_dynamic_redirection
 def phabricator(arg):
     if not PHABRICATOR_REGEX.search(arg):
         return False
     return PHABRICATOR_URL % arg
 
-@regsiter_dynamic
+@register_dynamic_redirection
 def jira(arg):
     if not JIRA_REGEX.search(arg):
         return False
     return JIRA_URL % arg
 
-@register_dynamic
+@register_dynamic_redirection
 def google_default(arg):
     """Default fallback to google search"""
     # Leave this at the bottom
