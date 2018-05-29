@@ -1,3 +1,4 @@
+from __future__ import re
 from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
@@ -18,6 +19,13 @@ GITHUB_REPO = 'https://github.com/Affirm/%s'
 GITHUB_ALL_SEARCH = 'https://github.com/search?q=%s+%s&unscoped_q=%s'
 GITHUB_REPO_SEARCH = 'https://github.com/Affirm/%s/search?q=%s'
 
+PHABRICATOR_REGEX = re.compile('^D[0-9]+$')
+PHABRICATOR_URL = 'https://phabricator.team.affirm.com/%s'
+
+# This is a super permissive regex, will match any CAPITAL-3049823
+# might want to restrict it to just (INFRA|AFJS etc)
+JIRA_REGEX = re.compile('^[A-Z]+-[0-9]+$')
+JIRA_URL = 'https://jira.team.affirm.com/browse/%s'
 
 class ResultType(object):
     REDIRECTION = 'redirection'
@@ -25,9 +33,9 @@ class ResultType(object):
 
 
 class BunnyCommands(object):
-    def __init__(self, cmd_list):
+    def __init__(self, cmd_list, dynamic_list):
         self.cmd_list = cmd_list
-        # self.dynamic_commands = dynamic_list
+        self.dynamic_commands = dynamic_list
 
 
 
@@ -40,18 +48,18 @@ class CommandFactory(object):
         # TODO: Use cmd_list to have configurable command list
         # commands = [x for x in cls.REGISTERED_COMMANDS if x.__name__ in cmd_list]
         commands = cls.REGISTERED_COMMANDS
-        return BunnyCommands(commands)
+        return BunnyCommands(cls.REGISTERED_COMMANDS, cls.REGISTERED_DYNAMIC_COMMANDS)
 
 
 def register_command(cmd):
     CommandFactory.REGISTERED_COMMANDS[cmd.__name__] = cmd
     return cmd
 
-# def register_dynamic(cmd):
-#     # These will be called in the order they appear
-#     CommandFactory.REGISTERED_DYNAMIC_COMMANDS[] = cmd
-#     return cmd
-#
+def register_dynamic(cmd):
+    # These will be called in the order they are defined
+    CommandFactory.REGISTERED_DYNAMIC_COMMANDS.add(cmd)
+    return cmd
+
 
 def register_redirection_command(cmd):
     @wraps(cmd)
@@ -170,3 +178,21 @@ def _debug(*args, **kwargs):
 def cpp(arg):
     payload = {'q': arg}
     return Request(url=CPLUSPLUS, params=payload).prepare().url
+
+@register_dynamic
+def phabricator(arg):
+    if not PHABRICATOR_REGEX.search(arg):
+        return False
+    return PHABRICATOR_URL % arg
+
+@regsiter_dynamic
+def jira(arg):
+    if not JIRA_REGEX.search(arg):
+        return False
+    return JIRA_URL % arg
+
+@register_dynamic
+def google_default(arg):
+    """Default fallback to google search"""
+    # Leave this at the bottom
+    return g(arg)
