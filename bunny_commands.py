@@ -10,7 +10,6 @@ PYTHON2_REF = 'https://docs.python.org/2/search.html'
 PYTHON3_REF = 'https://docs.python.org/3/search.html'
 GOOGLE_SEARCH = 'https://www.google.com/search'
 GOOGLE_MAIL = 'https://mail.google.com/mail/u/'
-DEALMOON = 'http://cn.dealmoon.com/top/'
 CPLUSPLUS = 'http://www.cplusplus.com/search.do'
 
 
@@ -28,7 +27,7 @@ class CommandFactory(object):
     REGISTERED_COMMANDS = {}
 
     @classmethod
-    def export(cls, cmd_list=None):
+    def export(cls):
         # TODO: Use cmd_list to have configurable command list
         # commands = [x for x in cls.REGISTERED_COMMANDS if x.__name__ in cmd_list]
         commands = cls.REGISTERED_COMMANDS
@@ -85,12 +84,6 @@ def g(arg):
 def glucky(arg):
     payload = {'q': arg}
     return Request(url=GOOGLE_SEARCH, params=payload).prepare().url + '&btnI'
-
-
-@register_redirection_command
-def deal(arg):
-    return DEALMOON + (arg if arg else '')
-
 
 @register_redirection_command
 def gmail(arg):

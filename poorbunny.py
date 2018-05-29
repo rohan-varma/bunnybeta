@@ -25,17 +25,21 @@ class PoorBunny(object):
         return self.do_command(*args, **kwargs)
 
     def do_command(self, *args, **kwargs):
-        if args:
+        if kwargs:
             try:
-                method, margs = args[0].split(None, 1)
+                method, margs = kwargs['query'].split(' ', 1)
+                print(method)
+                print(margs)
             except ValueError:
                 method = None
             if not method or method not in self.commands.cmd_list:
                 method = DETAULT_CMD
                 margs = args[0]
             cmd = self.commands.cmd_list.get(method, None)
+            print(cmd)
             result, rtype = cmd(margs)
             if rtype == ResultType.REDIRECTION:
+                print("redirecting")
                 raise cherrypy.HTTPRedirect(result)
             elif rtype == ResultType.CONTENT:
                 # TODO: Add support to directly rendering content BEAUTIFULLY..
