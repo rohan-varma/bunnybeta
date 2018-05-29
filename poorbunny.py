@@ -32,11 +32,15 @@ class PoorBunny(object):
                 margs = ''
             else:
                 method, margs = split
+            result, rtype = (None, None)
             if not method or method not in self.commands.cmd_list:
-                method = DETAULT_CMD
-                margs = kwargs['query']
-            cmd = self.commands.cmd_list.get(method, None)
-            result, rtype = cmd(margs)
+                for cmd in self.commands.dynamic_commands:
+                    result, rtype = cmd(kwargs['query'])
+                    if result:
+                        break
+            else:
+                cmd = self.commands.cmd_list.get(method, None)
+                result, rtype = cmd(margs)
             if rtype == ResultType.REDIRECTION:
                 print("redirecting")
                 raise cherrypy.HTTPRedirect(result)
