@@ -9,7 +9,6 @@ import cherrypy
 
 from bunny_commands import CommandFactory, ResultType
 
-
 DEFAULT_PORT = 10086
 DETAULT_CMD = 'g'
 

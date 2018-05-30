@@ -6,6 +6,8 @@ from __future__ import division
 from functools import wraps
 from requests.models import Request
 
+from keywords import aliased_commands, repos
+
 import re
 
 PYTHON2_REF = 'https://docs.python.org/2/search.html'
@@ -134,11 +136,6 @@ def askbot(arg):
 
 @register_redirection_command
 def gh(arg):
-    repos = {
-        'att': 'all-the-things',
-        'ds': 'data-science',
-        'wx': 'web-ux'
-    }
     if not arg:
         return GITHUB_URL
     split = arg.split(' ', 1)
@@ -174,6 +171,13 @@ def _debug(*args, **kwargs):
 def cpp(arg):
     payload = {'q': arg}
     return Request(url=CPLUSPLUS, params=payload).prepare().url
+
+@register_dynamic_redirection
+def alias(arg):
+    if arg in aliased_commands:
+        return aliased_commands[arg]
+    return False
+
 
 @register_dynamic_redirection
 def phabricator(arg):
