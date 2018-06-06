@@ -118,7 +118,7 @@ def gmail(arg):
         account_num, search_content = arg.split(None, 1)
     except ValueError:
         account_num, search_content = arg, None
-    return GOOGLE_MAIL + account_num + ('/#search/' + search_content) if search_content else ''
+    return GOOGLE_MAIL + account_num + (('/#search/' + search_content) if search_content else '')
 
 @register_redirection_command
 def confluence(arg):
@@ -127,6 +127,10 @@ def confluence(arg):
     """
     payload = {'queryString': arg}
     return Request(url=CONFLUENCE_URL, params=payload).prepare().url
+
+@register_redirection_command
+def wiki(arg):
+    return confluence(arg)
 
 @register_redirection_command
 def askbot(arg):
