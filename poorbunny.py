@@ -23,6 +23,25 @@ class PoorBunny(object):
     def default(self, *args, **kwargs):
         return self.do_command(*args, **kwargs)
 
+    @cherrypy.expose
+    def help(self, *args, **kwargs):
+        return """
+            Available Commands:
+
+            <br /><b>gmail [1|2..]</b>: Go to gmail (Defaults to account 0)
+            <br /><b>namely</b>: Goes to namely
+            <br /><b>gh [*|reponame|att.. [searchterm]]</b>: Goes to github, optionally jump to a repo or search that codebase for a term
+            <br /><b>confluence searchterm</b>: searches the Confluence wiki for the given search term
+            <br /><b>wiki</b>: alias for confluence
+            <br /><b>jira</b>: Jump to JIRA, a ticket and task manager
+            <br /><b>grafana</b>: Metrics portal for visualizing the metrics from InfluxDB
+            <br /><b>askbot searchterm</b>: Searches askbot, an internal question/answer service (like StackOverflow)
+            <br />
+            <br /><b>{JIRA TICKET NUMBER} </b>: jump to ticket number
+            <br /><b>{Phabricator diff number} </b>: Jump to diff
+
+        """
+
     def do_command(self, *args, **kwargs):
         if kwargs and 'query' in kwargs:
             split = kwargs['query'].split(' ', 1)
