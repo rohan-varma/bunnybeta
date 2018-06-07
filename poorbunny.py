@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from __future__ import division
 
 import argparse
+import os
 
 import cherrypy
 
@@ -12,6 +13,9 @@ from bunny_commands import CommandFactory, ResultType
 DEFAULT_PORT = 10086
 DETAULT_CMD = 'g'
 
+file = open('public/index.html', 'r')
+index = file.read()
+file.close
 
 class PoorBunny(object):
     def __init__(self, commands=None):
@@ -21,6 +25,10 @@ class PoorBunny(object):
 
     @cherrypy.expose
     def default(self, *args, **kwargs):
+        return index
+
+    @cherrypy.expose
+    def search(self, *args, **kwargs):
         return self.do_command(*args, **kwargs)
 
     @cherrypy.expose
@@ -76,7 +84,21 @@ def start_bunny_server(bunny, port=None, host='0.0.0.0', errorlog=None, accesslo
     cherrypy.server.socket_port = port
     cherrypy.config['log.error_file'] = errorlog
     cherrypy.config['log.access_file'] = accesslog
-    return cherrypy.quickstart(bunny)
+    conf = {
+        '/': {
+            'tools.sessions.on': True,
+            'tools.staticdir.on' : True,
+            'tools.staticdir.root': os.path.abspath(os.getcwd()),
+            'tools.staticdir.dir': './public',
+            'tools.staticdir.index' : "public/index.html"
+        },
+        '/static':
+            {
+                'tools.staticdir.on': True,
+                'tools.staticdir.dir': './public'
+            }
+    }
+    return cherrypy.quickstart(bunny, '', conf)
 
 
 def parse_args():
