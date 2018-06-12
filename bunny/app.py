@@ -7,8 +7,9 @@ from flask import (Flask, request, render_template)
 
 from search import search
 
+
 def create_app(test_config=None):
-    #create and configure
+    # create and configure
     app = Flask('Bunny', instance_relative_config=True)
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -18,6 +19,7 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
     app.register_blueprint(search)
+
     @app.route('/')
     def home():
         return render_template('index.html', base_url = request.url_root)

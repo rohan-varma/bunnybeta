@@ -12,17 +12,18 @@ def py(arg):
     payload = {'q': arg}
     return Request(url=PYTHON2_REF, params=payload).prepare().url
 
+
 @CommandFactory.register_redirection_command
 def py3(arg):
     # TODO: Implement feeling lucky search
     payload = {'q': arg}
     return Request(url=PYTHON3_REF, params=payload).prepare().url
 
+
 @CommandFactory.register_redirection_command
 def ss(arg):
     payload = {
-        'cx':'004624818632696854117:yfmprrbw3pk',
+        'cx': '004624818632696854117:yfmprrbw3pk',
         'q': arg
     }
     return Request(url=SALT_REF, params=payload).prepare().url
-
