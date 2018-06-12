@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
-  <ShortName>Affirm Bunny</ShortName>
+  <ShortName>bunny</ShortName>
+  <LongName>Bunny.aff Search</LongName>
   <Description>Bunny Shortcuts and Commands</Description>
   <Contact>yuan.yuchuan@affirm.com</Contact>
   <!-- Suggestions URL -->
   <Url type="application/x-suggestions+json"
        rel="suggestions"
-       template="{{ base_url }}/search?suggest={searchTerms}"/>
+       template="{{ base_url }}suggest?query={searchTerms}"/>
   <!-- Search URL -->
   <Url type="text/html"
-       template="{{ base_url }}/search?query={searchTerms}"/>
+       template="{{ base_url }}search?query={searchTerms}"/>
   <Image height="64" width="64" type="image/png">https://www.affirm.com/favicon-d26c1b18.png</Image>
   <!-- <Query role="example" searchTerms="cat" />
-  <LongName>Example.com Web Search</LongName>
   <Developer>Example.com Development Team</Developer>
   <Attribution>
     Search data Copyright 2005, Example.com, Inc., All Rights Reserved

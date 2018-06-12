@@ -20,13 +20,11 @@ def create_app(test_config=None):
     app.register_blueprint(search)
     @app.route('/')
     def home():
-        base_url = request.base_url
-        return render_template('index.html', base_url = base_url)
+        return render_template('index.html', base_url = request.url_root)
 
     @app.route('/bunnysearch.xml')
     def search_xml():
-        base_url = request.base_url
-        return render_template('bunnysearch.xml', base_url = base_url)
+        return render_template('bunnysearch.xml', base_url = request.url_root)
 
 
     return app
