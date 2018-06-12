@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import division
 
-from flask import Flask
+from flask import (Flask, request, render_template)
 
-from .search import search
+from search import search
 
 def create_app(test_config=None):
     #create and configure
@@ -18,8 +18,15 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
     app.register_blueprint(search)
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    @app.route('/')
+    def home():
+        base_url = request.base_url
+        return render_template('index.html', base_url = base_url)
+
+    @app.route('/bunnysearch.xml')
+    def search_xml():
+        base_url = request.base_url
+        return render_template('bunnysearch.xml', base_url = base_url)
+
 
     return app

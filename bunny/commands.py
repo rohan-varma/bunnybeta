@@ -6,7 +6,7 @@ from __future__ import division
 from functools import wraps
 from requests.models import Request
 
-from .keywords import aliased_commands, repos
+from keywords import aliased_commands, repos
 
 import re
 
