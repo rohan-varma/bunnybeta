@@ -25,11 +25,10 @@ def show():
             result, rtype = cmd(margs)
 
         if rtype == ResultType.REDIRECTION:
-
+            print(result)
             return redirect(result)
         elif rtype == ResultType.CONTENT:
             # TODO: Add support to directly rendering content
-            print("content")
             return result
         else:
             return "nothing doing"

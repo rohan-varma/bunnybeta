@@ -199,4 +199,4 @@ def jira(arg):
 def google_default(arg):
     """Default fallback to google search"""
     # Leave this at the bottom
-    return g(arg)
+    return g(arg)[0]
