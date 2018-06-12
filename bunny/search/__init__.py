@@ -1,5 +1,6 @@
 from flask import (Blueprint, redirect, request)
-from commands import CommandFactory, ResultType
+
+from search.commands import CommandFactory, ResultType
 
 search = Blueprint('search', 'bunnysearch', url_prefix='/search')
 commands = CommandFactory.export()
@@ -25,10 +26,14 @@ def show():
             result, rtype = cmd(margs)
 
         if rtype == ResultType.REDIRECTION:
-            print(result)
             return redirect(result)
         elif rtype == ResultType.CONTENT:
             # TODO: Add support to directly rendering content
             return result
         else:
             return "nothing doing"
+    elif request.args and 'suggest' in request.args:
+        return ''
+    else:
+        return ''
+

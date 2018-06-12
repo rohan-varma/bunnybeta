@@ -130,7 +130,7 @@ def confluence(arg):
 
 @register_redirection_command
 def wiki(arg):
-    return confluence(arg)
+    return confluence(arg)[0]
 
 @register_redirection_command
 def askbot(arg):
