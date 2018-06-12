@@ -15,4 +15,6 @@ Open your console
 
 > bunny-start.sh
 
-And visit the homepage (defaults to localhost:5000) to set up
+## Installation
+
+Open the bunny homepage in your browser (defaults to localhost:5000) and follow the instructions there
