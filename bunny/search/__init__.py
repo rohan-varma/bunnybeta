@@ -2,6 +2,8 @@ from flask import (Blueprint, redirect, request)
 
 from search.commands import CommandFactory, ResultType
 
+import search.google
+
 search = Blueprint('search', 'bunnysearch', url_prefix='/search')
 commands = CommandFactory.export()
 

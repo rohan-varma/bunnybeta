@@ -12,8 +12,6 @@ import re
 
 PYTHON2_REF = 'https://docs.python.org/2/search.html'
 PYTHON3_REF = 'https://docs.python.org/3/search.html'
-GOOGLE_SEARCH = 'https://www.google.com/search'
-GOOGLE_MAIL = 'https://mail.google.com/mail/u/'
 CONFLUENCE_URL = 'https://confluence.team.affirm.com/dosearchsite.action'
 ASKBOT_URL = 'https://askbot.team.affirm.com/'
 ASKBOT_QUERY_URL = 'https://askbot.team.affirm.com/questions/scope:all/sort:activity-desc/page:1/query:%s/'
@@ -53,74 +51,52 @@ class CommandFactory(object):
         commands = cls.REGISTERED_COMMANDS
         return BunnyCommands(cls.REGISTERED_COMMANDS, cls.REGISTERED_DYNAMIC_COMMANDS)
 
-def register_redirection_command(cmd):
-    wrapped = register_redirection(cmd)
-    CommandFactory.REGISTERED_COMMANDS[cmd.__name__] = wrapped
-    return wrapped
+    @classmethod
+    def register_redirection_command(self, cmd, name=None):
+        name = name or cmd.__name__
+        wrapped = self.register_redirection(cmd)
+        CommandFactory.REGISTERED_COMMANDS[name] = wrapped
+        return wrapped
 
-def register_dynamic_redirection(cmd):
-    wrapped = register_redirection(cmd)
-    CommandFactory.REGISTERED_DYNAMIC_COMMANDS.append(wrapped)
-    return wrapped
+    @classmethod
+    def register_dynamic_redirection(self, cmd):
+        wrapped = self.register_redirection(cmd)
+        CommandFactory.REGISTERED_DYNAMIC_COMMANDS.append(wrapped)
+        return wrapped
 
-def register_redirection(cmd):
-    @wraps(cmd)
-    def wrapped(*args, **kwargs):
-        ret = cmd(*args, **kwargs)
-        return ret, ResultType.REDIRECTION
-    return wrapped
+    @classmethod
+    def register_redirection(self, cmd):
+        @wraps(cmd)
+        def wrapped(*args, **kwargs):
+            ret = cmd(*args, **kwargs)
+            return ret, ResultType.REDIRECTION
+        return wrapped
 
-def register_content_command(cmd):
-    @wraps(cmd)
-    def wrapped(*args, **kwargs):
-        ret = cmd(*args, **kwargs)
-        return ret, ResultType.CONTENT
-    return wrapped
+    @classmethod
+    def register_content_command(self, cmd):
+        @wraps(cmd)
+        def wrapped(*args, **kwargs):
+            ret = cmd(*args, **kwargs)
+            return ret, ResultType.CONTENT
+        return wrapped
 
 # TODO: separate core functions apart from additional functions
 
 
-@register_redirection_command
+@CommandFactory.register_redirection_command
 def py(arg):
     # TODO: Implement feeling lucky search
     payload = {'q': arg}
     return Request(url=PYTHON2_REF, params=payload).prepare().url
 
 
-@register_redirection_command
+@CommandFactory.register_redirection_command
 def py3(arg):
     # TODO: Implement feeling lucky search
     payload = {'q': arg}
     return Request(url=PYTHON3_REF, params=payload).prepare().url
 
-
-@register_redirection_command
-def g(arg):
-    payload = {'q': arg}
-    return Request(url=GOOGLE_SEARCH, params=payload).prepare().url
-
-
-@register_redirection_command
-def glucky(arg):
-    payload = {'q': arg}
-    return Request(url=GOOGLE_SEARCH, params=payload).prepare().url + '&btnI'
-
-@register_redirection_command
-def gmail(arg):
-    """
-    Go to gmail, with account number arg
-    :param arg: Account #
-    :return:
-    """
-    if not arg:
-        return GOOGLE_MAIL
-    try:
-        account_num, search_content = arg.split(None, 1)
-    except ValueError:
-        account_num, search_content = arg, None
-    return GOOGLE_MAIL + account_num + (('/#search/' + search_content) if search_content else '')
-
-@register_redirection_command
+@CommandFactory.register_redirection_command
 def confluence(arg):
     """
     Search Confluence
@@ -128,17 +104,17 @@ def confluence(arg):
     payload = {'queryString': arg}
     return Request(url=CONFLUENCE_URL, params=payload).prepare().url
 
-@register_redirection_command
+@CommandFactory.register_redirection_command
 def wiki(arg):
     return confluence(arg)[0]
 
-@register_redirection_command
+@CommandFactory.register_redirection_command
 def askbot(arg):
     if not arg:
         return ASKBOT_URL
     return ASKBOT_QUERY_URL % arg
 
-@register_redirection_command
+@CommandFactory.register_redirection_command
 def gh(arg):
     if not arg:
         return GITHUB_URL
@@ -156,7 +132,7 @@ def gh(arg):
     else:
         return GITHUB_REPO_SEARCH % (repo,split[1])
 
-@register_content_command
+@CommandFactory.register_content_command
 def _debug(*args, **kwargs):
     try:
         method, margs = args[0].split(None, 1)
@@ -171,32 +147,27 @@ def _debug(*args, **kwargs):
         result, _ = real_cmd(*margs, **kwargs)
         return "<code><b>poorbunny</b><br/> DEBUG: redirect to <a href='{url}'>{url}</a></code>".format(url=result)
 
-@register_redirection_command
+@CommandFactory.register_redirection_command
 def cpp(arg):
     payload = {'q': arg}
     return Request(url=CPLUSPLUS, params=payload).prepare().url
 
-@register_dynamic_redirection
+@CommandFactory.register_dynamic_redirection
 def alias(arg):
     if arg in aliased_commands:
         return aliased_commands[arg]
     return False
 
 
-@register_dynamic_redirection
+@CommandFactory.register_dynamic_redirection
 def phabricator(arg):
     if not PHABRICATOR_REGEX.search(arg):
         return False
     return PHABRICATOR_URL % arg
 
-@register_dynamic_redirection
+@CommandFactory.register_dynamic_redirection
 def jira(arg):
     if not JIRA_REGEX.search(arg):
         return False
     return JIRA_URL % arg
 
-@register_dynamic_redirection
-def google_default(arg):
-    """Default fallback to google search"""
-    # Leave this at the bottom
-    return g(arg)[0]
