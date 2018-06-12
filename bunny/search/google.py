@@ -1,4 +1,4 @@
-from search.commands import CommandFactory
+from lib.commands import CommandFactory
 from requests.models import Request
 
 GOOGLE_SEARCH = 'https://www.google.com/search'
