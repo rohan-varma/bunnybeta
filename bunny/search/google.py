@@ -24,11 +24,11 @@ def gmail(arg):
     """
     if not arg:
         return GOOGLE_MAIL
-    try:
-        account_num, search_content = arg.split(None, 1)
-    except ValueError:
-        account_num, search_content = arg, None
-    return GOOGLE_MAIL + account_num + (('/#search/' + search_content) if search_content else '')
+    search_content = arg
+    account_num = '0'
+    ret_url = GOOGLE_MAIL + account_num + (('/#search/' + search_content) if search_content else '')
+    print('returning url {}'.format(ret_url))
+    return ret_url
 
 @CommandFactory.register_dynamic_redirection
 def google_default(arg):

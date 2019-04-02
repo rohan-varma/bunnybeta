@@ -12,7 +12,7 @@ import re
 
 GITHUB_URL = 'https://github.com'
 GITHUB_REPO = 'https://github.com/Affirm/%s'
-GITHUB_ALL_SEARCH = 'https://github.com/search?q=%s+%s&unscoped_q=%s'
+GITHUB_ALL_SEARCH = 'https://github.com/search?q=%s'
 GITHUB_REPO_SEARCH = 'https://github.com/Affirm/%s/search?q=%s'
 
 
@@ -75,19 +75,139 @@ class CommandFactory(object):
 def gh(arg):
     if not arg:
         return GITHUB_URL
-    split = arg.split(' ', 1)
-    repo = split[0]
-    if repo in repos:
-        """one of the known abbreviations"""
-        repo = repos[repo]
-    if len(split) == 1:
-        """jump to repo"""
-        return GITHUB_REPO % repo
-    elif repo == '*':
-        """Search all"""
-        return GITHUB_ALL_SEARCH % ('org:Affirm', split[1], split[1])
+    split = arg.split(" ")
+    print(split)
+    retval = GITHUB_ALL_SEARCH % (" ".join(split))
+    print('returning {}'.format(retval))
+    print('hi')
+    return retval
+
+@CommandFactory.register_redirection_command
+def yt(arg):
+    if not arg:
+        return 'https://youtube.com'
     else:
-        return GITHUB_REPO_SEARCH % (repo,split[1])
+        # https://www.youtube.com/results?search_query=third+leg+studios
+        YOUTUBE_URL = 'https://youtube.com'
+        search_url = '/results?search_query=%s'
+        arg_list = arg.split(" ")
+        arg_str = "+".join(arg_list)
+        complete_url = YOUTUBE_URL + (search_url % (arg_str))
+        print('returning {}'.format(complete_url))
+        return complete_url
+
+@CommandFactory.register_redirection_command
+def reddit(arg):
+    if not arg:
+        return 'https://reddit.com'
+    else:
+        # https://www.reddit.com/search?q=personal%20finance
+        REDDIT_URL = 'https://reddit.com'
+        search_url = '/search?q=%s'
+        arg_list = arg.split(" ")
+        arg_str = "+".join(arg_list)
+        complete_url = REDDIT_URL + (search_url % arg_str)
+        print('retuning {}'.format(complete_url))
+        return complete_url
+
+@CommandFactory.register_redirection_command
+def quora(arg):
+    if not arg:
+        return 'https://quora.com'
+    else:
+        # https://www.quora.com/search?q=machine+learning
+        QUORA_URL = 'https://quora.com'
+        search_url = '/search?q=%s'
+        arg_list = arg.split(" ")
+        arg_str = "+".join(arg_list)
+        complete_url = QUORA_URL + (search_url % arg_str)
+        print('returning {}'.format(complete_url))
+        return complete_url
+
+
+@CommandFactory.register_redirection_command
+def fb(arg):
+    if not arg:
+        return 'https://facebook.com'
+    else:
+        FB_URL = 'https://facebook.com'
+        # https://www.facebook.com/search/str/rohan+varma/keywords_search
+        search_url = '/search/str/%s/keywords_search'
+        arg_list = arg.split(" ")
+        arg_str = "+".join(arg_list)
+        complete_url = FB_URL + (search_url % arg_str)
+        print('returning {}'.format(complete_url))
+        return complete_url
+
+@CommandFactory.register_redirection_command
+def wiki(arg):
+    if not arg:
+        return 'https://wikipedia.org'
+    else:
+        # https://en.wikipedia.org/w/index.php?search=computer+science
+        arg_list = arg.split(" ")
+        arg_str = "+".join(arg_list)
+        WIKI_URL = 'https://en.wikipedia.org/w/index.php'
+        search_url = '?search=%s'
+        complete_url = WIKI_URL + (search_url % arg_str)
+        print('returning {}'.format(complete_url))
+        return complete_url
+
+@CommandFactory.register_redirection_command
+def ucla(arg):
+    if not arg:
+        return "https://my.ucla.edu"
+    else:
+        if 'wooden' in arg:
+            return 'https://www.recreation.ucla.edu/facilityhours#618141774-john-wooden-center-jwc-and-strength--conditioning-zones-scz'
+        elif 'bfit' in arg:
+            return 'https://www.recreation.ucla.edu/facilityhours#618141817-bruin-fitness-center-bfit'
+        # dining halls
+        elif 'bplate' in arg:
+            if 'hours' in arg:
+                return 'http://menu.dining.ucla.edu/Hours'
+            else:
+                return 'http://menu.dining.ucla.edu/Menus/BruinPlate/'
+        elif 'covel' in arg:
+            if 'hours' in arg:
+                return 'http://menu.dining.ucla.edu/Hours'
+            else:
+                return 'http://menu.dining.ucla.edu/Menus/Covel/'
+        elif 'covel' in arg:
+            if 'hours' in arg:
+                return 'http://menu.dining.ucla.edu/Hours'
+            else:
+                return 'http://menu.dining.ucla.edu/Menus/Covel/'
+
+        # no one goes to these anyways...
+        elif 'feast' in arg:
+            if 'hours' in arg:
+                return 'http://menu.dining.ucla.edu/Hours'
+            else:
+                return 'http://menu.dining.ucla.edu/Menus/FeastAtRieber/'
+        elif 'de neve' in arg or 'deneve' in arg:
+            if 'hours' in arg:
+                return 'http://menu.dining.ucla.edu/Hours'
+            else:
+                return 'http://menu.dining.ucla.edu/Menus/DeNeve/'        
+
+
+
+
+@CommandFactory.register_redirection_command
+def twitter(arg):
+    if not arg:
+        return "https://twitter.com"
+    else:
+        TWITTER_URL = 'https://twitter.com'
+        #https://twitter.com/search?q=rohan%20varma&src=typd&lang=en
+        search_url = '/search?q=%s&src=typd&lang=en'
+        arg_list = arg.split(" ")
+        arg_str = "%20".join(arg_list)
+        complete_url = TWITTER_URL + (search_url % arg_str)
+        print('retuning {}'.format(complete_url))
+        return complete_url
+
 
 @CommandFactory.register_content_command
 def _debug(*args, **kwargs):
