@@ -163,6 +163,20 @@ def amzn(arg):
         return complete_url
 
 @CommandFactory.register_redirection_command
+def maps(arg):
+    if not arg:
+        return 'https://maps.google.com'
+    else:
+        MAPS_URL = 'https://google.com/maps'
+        place_url = '/place/%s'
+        arg_list = arg.split(" ")
+        arg_str = " ".join(arg_list)
+        complete_url = MAPS_URL + (place_url % arg_str)
+        print('returning {}'.format(complete_url))
+        return complete_url
+
+
+@CommandFactory.register_redirection_command
 def flare(arg):
     return 'https://dash.cloudflare.com/a15f589687872ed0f79023fa68776db3/rohanvarma.me'
 
