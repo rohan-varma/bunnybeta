@@ -10,10 +10,15 @@ from keywords import aliased_commands, repos
 
 import re
 
+
 GITHUB_URL = 'https://github.com'
 GITHUB_REPO = 'https://github.com/Affirm/%s'
 GITHUB_ALL_SEARCH = 'https://github.com/search?q=%s'
 GITHUB_REPO_SEARCH = 'https://github.com/Affirm/%s/search?q=%s'
+
+lines = open('/Users/rohan/desktop/bunnybeta/bunny/lib/do_not_commit.txt').readlines()
+lines = [line.rstrip() for line in lines]
+bad_terms = set(lines)
 
 
 class ResultType(object):
@@ -31,6 +36,19 @@ class BunnyCommands(object):
 class CommandFactory(object):
     REGISTERED_COMMANDS = {}
     REGISTERED_DYNAMIC_COMMANDS = []
+    # lines = open('do_not_commit.txt').readlines()
+    # lines = [line.rstrip() for line in lines]
+    # bad_terms = set(lines)
+    # self.lines = lines
+    # self.bad_terms = bad_terms
+
+
+    # @classmethod
+    # def setup_bad_term_detector(cls):
+    #     lines = open('do_not_commit.txt').readlines()
+    #     lines = [line.rstrip() for line in lines]
+    #     bad_terms = set(lines)
+    #     return lines, bad_terms
 
     @classmethod
     def export(cls):
@@ -44,6 +62,14 @@ class CommandFactory(object):
         name = name or cmd.__name__
         wrapped = self.register_redirection(cmd)
         CommandFactory.REGISTERED_COMMANDS[name] = wrapped
+        # hack for amazon and robinhood
+        if name == 'amzn':
+            CommandFactory.REGISTERED_COMMANDS["amazon"] = wrapped
+        elif name == 'robinhood':
+            CommandFactory.REGISTERED_COMMANDS["robin"] = wrapped
+            CommandFactory.REGISTERED_COMMANDS["rbnhd"] = wrapped
+
+
         return wrapped
 
     @classmethod
@@ -79,7 +105,6 @@ def gh(arg):
     print(split)
     retval = GITHUB_ALL_SEARCH % (" ".join(split))
     print('returning {}'.format(retval))
-    print('hi')
     return retval
 
 @CommandFactory.register_redirection_command
@@ -123,6 +148,31 @@ def quora(arg):
         complete_url = QUORA_URL + (search_url % arg_str)
         print('returning {}'.format(complete_url))
         return complete_url
+
+@CommandFactory.register_redirection_command
+def amzn(arg):
+    if not arg:
+        return 'https://amazon.com'
+    else:
+        # https://www.amazon.com/s?k=basketball+shoes
+        AMZN_URL = 'https://amazon.com'
+        search_url = '/s?k=%s'
+        arg_list = arg.split(" ")
+        arg_str = "=".join(arg_list)
+        complete_url = AMZN_URL + (search_url % arg_str)
+        return complete_url
+
+@CommandFactory.register_redirection_command
+def flare(arg):
+    return 'https://dash.cloudflare.com/a15f589687872ed0f79023fa68776db3/rohanvarma.me'
+
+# @CommandFactory.register_redirection_command
+# def amazon(arg):
+#     return amzn(arg)
+
+# @CommandFactory.register_redirection_command
+# def rbnhd(arg):
+#     return robinhod(arg)
 
 
 @CommandFactory.register_redirection_command
@@ -206,6 +256,20 @@ def twitter(arg):
         arg_str = "%20".join(arg_list)
         complete_url = TWITTER_URL + (search_url % arg_str)
         print('retuning {}'.format(complete_url))
+        return complete_url
+
+@CommandFactory.register_redirection_command
+def robinhood(arg):
+    # robinhood stock search
+    if not arg:
+        return "https://robinhood.com"
+    else:
+        RBNHD_URL = "https://robinhood.com"
+        stocks_url = "/stocks/%s"
+        arg_list = arg.split(" ")
+        stock_to_search = arg_list[0]
+        complete_url = RBNHD_URL + (stocks_url % stock_to_search)
+        print('returning {}'.format(complete_url))
         return complete_url
 
 

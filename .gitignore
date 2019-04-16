@@ -44,3 +44,5 @@ crashlytics-build.properties
 fabric.properties
 
 *.pyc
+bunny/lib/do_not_commit.txt
+bunny/nohup.out
