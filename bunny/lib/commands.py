@@ -36,19 +36,7 @@ class BunnyCommands(object):
 class CommandFactory(object):
     REGISTERED_COMMANDS = {}
     REGISTERED_DYNAMIC_COMMANDS = []
-    # lines = open('do_not_commit.txt').readlines()
-    # lines = [line.rstrip() for line in lines]
-    # bad_terms = set(lines)
-    # self.lines = lines
-    # self.bad_terms = bad_terms
 
-
-    # @classmethod
-    # def setup_bad_term_detector(cls):
-    #     lines = open('do_not_commit.txt').readlines()
-    #     lines = [line.rstrip() for line in lines]
-    #     bad_terms = set(lines)
-    #     return lines, bad_terms
 
     @classmethod
     def export(cls):
@@ -171,6 +159,7 @@ def maps(arg):
         place_url = '/place/%s'
         arg_list = arg.split(" ")
         arg_str = " ".join(arg_list)
+        print(arg_str == arg)
         complete_url = MAPS_URL + (place_url % arg_str)
         print('returning {}'.format(complete_url))
         return complete_url
