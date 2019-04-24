@@ -146,6 +146,8 @@ def amzn(arg):
         AMZN_URL = 'https://amazon.com'
         search_url = '/s?k=%s'
         arg_list = arg.split(" ")
+        if arg_list[0] in ['order', 'orders', 'package', 'packages']:
+            return AMZN_URL + "/orders"
         arg_str = "=".join(arg_list)
         complete_url = AMZN_URL + (search_url % arg_str)
         return complete_url
