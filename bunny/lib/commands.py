@@ -138,6 +138,19 @@ def quora(arg):
         return complete_url
 
 @CommandFactory.register_redirection_command
+def linkedin(arg):
+    if not arg:
+        return 'https://linkedin.com'
+    else:
+        #https://www.linkedin.com/search/results/people/?keywords=rohan%20varma&origin=GLOBAL_SEARCH
+        LINKED_URL = 'https://linkedin.com'
+        search_url = '/search/results/people?keywords=%s&origin=GLOBAL_SEARCH'
+        complete_url = LINKED_URL + (search_url % arg)
+        print('returning {}'.format(complete_url))
+        return complete_url
+
+
+@CommandFactory.register_redirection_command
 def amzn(arg):
     if not arg:
         return 'https://amazon.com'
